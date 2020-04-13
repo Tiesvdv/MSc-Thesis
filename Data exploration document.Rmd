@@ -1,0 +1,109 @@
+---
+title: "Data exploration document"
+author: "Ties van der Veen"
+date: "2-4-2020"
+output: pdf_document
+---
+
+First an overview of histograms of the variables used to analyze the first hypothesis: pin2, nfc2, smart, intern, beschryf, zinvol, bijhoud, uitgeven, loan2, loan3, hoevspa.
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+ggplot(data=subset(PSY2018, !is.na(pin2)), aes(x=as.factor(pin2)))+
+  geom_histogram(stat='count')+
+  labs(x='usage of pin as payment method', y='number of responses', title='nfc numbers')+
+  coord_flip()
+```
+
+```{r}
+ggplot(data=subset(PSY2018, !is.na(nfc2)), aes(x=as.factor(nfc2)))+
+  geom_histogram(stat='count', binwidth = "0.5")+
+  labs(x='usage of nfc as payment method', y='number of responses', title='nfc numbers')+
+  coord_flip()
+```
+
+```{r}
+ggplot(data=subset(PSY2018, !is.na(smart)), aes(x=as.factor(smart)))+
+  geom_histogram(stat='count')+
+  labs(x='usage of an application as payment method', y='number of responses', title='application numbers')+
+  coord_flip()
+```
+
+```{r}
+ggplot(data=subset(PSY2018, !is.na(intern)), aes(x=as.factor(intern)))+
+  geom_histogram(stat='count')+
+  labs(x='usage of webpage as payment method', y='number of responses', title='internet numbers')+
+  coord_flip()
+```
+
+```{r}
+ggplot(data=subset(PSY2018, !is.na(beschryf)), aes(x=as.factor(beschryf)))+
+  geom_histogram(stat='count')+
+  labs(x='level of risk-taking', y='number of responses', title='How much risk did you take in the last few years (when investing)?', caption = "Scale of 1-5 with 1 being no risk taken and 5 being a lot of risks taken")+
+  coord_flip()
+
+```
+
+```{r}
+ggplot(data=subset(PSY2018, !is.na(zinvol)), aes(x=as.factor(zinvol)))+
+  geom_histogram(stat='count')+
+  labs(x='saving usefulness', y='number of responses', title='Do you think saving is useful?')+
+  coord_flip()
+```
+
+```{r}
+ggplot(data=subset(PSY2018, !is.na(bijhoud)), aes(x=as.factor(bijhoud)))+
+  geom_histogram(stat='count')+
+  labs(x='level of keeping track', y='number of responses', title='How well do you keep track of your household expenditures?')+
+  coord_flip()
+```
+
+```{r}
+ggplot(data=subset(PSY2018, !is.na(uitgeven)), aes(x=as.factor(uitgeven)))+
+  geom_histogram(stat='count')+
+  labs(x='level of saving/spending', y='number of responses', title='Do you tend to spend or save your money after primary expenses?')+
+  coord_flip()
+```
+
+```{r}
+ggplot(data=subset(PSY2018, !is.na(loan2)), aes(x=as.factor(loan2)))+
+  geom_histogram(stat='count')+
+  labs(x='Level of ease to obtain a loan', y='number of responses', title='Statement: I can easily obtain a loan')+
+  coord_flip()
+```
+
+```{r}
+ggplot(data=subset(PSY2018, !is.na(loan3)), aes(x=as.factor(loan3)))+
+  geom_histogram(stat='count')+
+  labs(x='', y='number of responses', title='Have you ever had debt assistance?')+
+  coord_flip()
+```
+
+```{r}
+ggplot(data=subset(PSY2018, !is.na(hoevspa)), aes(x=as.factor(hoevspa)))+
+  geom_histogram(stat='count')+
+  labs(x='level of savings', y='number of responses', title='How much do you have saved?')+
+  coord_flip()
+```
+
+```{r}
+#Looking at covariance with a geom_count plot
+ggplot(data = PSY2018) +
+  geom_count(mapping = aes(x = pin2, y = nfc2))
+```
+
+
+
+
+
+
+
+
+
+
+
+

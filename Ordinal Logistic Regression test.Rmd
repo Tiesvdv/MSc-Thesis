@@ -1,0 +1,143 @@
+---
+title: "Ordinal Logistic Regression Test"
+author: "Ties van der Veen"
+date: "10-4-2020"
+output: pdf_document
+---
+
+```{r}
+options(repos="https://cran.rstudio.com")
+# install.packages("MASS")
+install.packages("effects")
+
+```
+
+```{r}
+library(tidyverse)
+library(effects)
+library(MASS)
+```
+
+
+```{r}
+PSYtest <- PSY2018[,c("nfc1", "nfc2", "smart", "intern", "pin2", "beschryf", "zinvol", "bijhoud", "uitgeven", "loan2", "loan3", "hoevspa")]
+PSYtest <- na.omit(PSYtest)
+```
+
+```{r}
+
+#Step not needed but can be used in the future.
+PSYtest$nfc2 = factor(PSYtest$nfc2, levels=c("Nooit", "Zelden", "Af en toe", "Vaak (iedere week)", "Zeer vaak (iedere dag)"), ordered = TRUE)
+PSYtest$beschryf = factor(PSYtest$beschryf, levels=c("Geen risico", "Zo nu en dan klein", "Enige", "Soms groot", "Vaak groot"), ordered = TRUE)
+PSYtest$zinvol = factor(PSYtest$zinvol, levels=c("Jazeker", "Ja misschien", "Waarsch niet", "Zeker niet"), ordered = TRUE)
+PSYtest$bijhoud = factor(PSYtest$bijhoud, levels=c("Niet/heel slecht", "Slecht", "Enigszins", "Goed", "Heel goed"), ordered = TRUE)
+PSYtest$uitgeven = factor(PSYtest$uitgeven, levels=c("Onmiddelijk uitgeven", "Uitgeven", "Beetje uitgeven", "Balans", "Beetje overhouden", "Overhouden", "Veel overhouden"), ordered = TRUE)
+PSYtest$loan2 = factor(PSYtest$loan2, levels=c("Heel eenvoudig lening", "Eenvoudig lening", "Normale kans lening", "Lastig lening", "Heel lastig lening"), ordered = TRUE)
+PSYtest$hoevspa = factor(PSYtest$hoevspa, levels=c("Minder dan 1.500", "Tussen 1.500 en 5.000", "Tussen 5.000 en 12.500", "Tussen 12.500 en 20.000", "Tussen 20.000 en 37.500", "Tussen 37.500 en 75.000", "Meer dan 75.000"), ordered = TRUE)
+```
+
+For the next codeblock I can use either the selected dataset with removed NAs PSYtest, or the orignial dataset PSY2018 (with NAs remaining). What difference does this make?
+
+```{r}
+samplesize = 0.6*nrow(PSY2018)
+index = sample(seq_len(nrow(PSY2018)), size=samplesize)
+datatrain = PSY2018[index,]
+datatest = PSY2018[-index,]
+```
+
+```{r}
+pinmodel = polr(pin2~beschryf + zinvol + bijhoud + uitgeven + loan2 + hoevspa, data=datatrain, Hess=TRUE)
+summary(pinmodel)
+
+predictpin = predict(pinmodel, datatest)
+table(datatest$pin2, predictpin)
+mean(as.character(PSYtest$pin2) !=
+       as.character(predictpin))
+
+plot(Effect(focal.predictors = "beschryf",pinmodel))
+plot(Effect(focal.predictors = "zinvol",pinmodel))
+plot(Effect(focal.predictors = "bijhoud",pinmodel))
+plot(Effect(focal.predictors = "uitgeven",pinmodel))
+plot(Effect(focal.predictors = "loan2",pinmodel))
+plot(Effect(focal.predictors = "hoevspa",pinmodel))
+```
+
+
+```{r}
+nfcmodel = polr(nfc2~beschryf + zinvol + bijhoud + uitgeven + loan2 + hoevspa, data=datatrain, Hess=TRUE)
+summary(nfcmodel)
+
+predictnfc = predict(nfcmodel, datatest)
+table(datatest$nfc2, predictnfc)
+mean(as.character(PSYtest$nfc2) !=
+       as.character(predictnfc))
+
+plot(Effect(focal.predictors = "beschryf",nfcmodel))
+plot(Effect(focal.predictors = "zinvol",nfcmodel))
+plot(Effect(focal.predictors = "bijhoud",nfcmodel))
+plot(Effect(focal.predictors = "uitgeven",nfcmodel))
+plot(Effect(focal.predictors = "loan2",nfcmodel))
+plot(Effect(focal.predictors = "hoevspa",nfcmodel))
+```
+
+```{r}
+smartmodel = polr(smart~beschryf + zinvol + bijhoud + uitgeven + loan2 + hoevspa, data=datatrain, Hess=TRUE)
+summary(smartmodel)
+
+predictsmart = predict(smartmodel, datatest)
+table(datatest$smart, predictsmart)
+mean(as.character(PSYtest$smart) !=
+       as.character(predictsmart))
+
+plot(Effect(focal.predictors = "beschryf",smartmodel))
+plot(Effect(focal.predictors = "zinvol",smartmodel))
+plot(Effect(focal.predictors = "bijhoud",smartmodel))
+plot(Effect(focal.predictors = "uitgeven",smartmodel))
+plot(Effect(focal.predictors = "loan2",smartmodel))
+plot(Effect(focal.predictors = "hoevspa",smartmodel))
+```
+
+```{r}
+internmodel = polr(intern~beschryf + zinvol + bijhoud + uitgeven + loan2 + hoevspa, data=datatrain, Hess=TRUE)
+summary(internmodel)
+
+predictintern = predict(internmodel, datatest)
+table(datatest$intern, predictintern)
+mean(as.character(PSYtest$intern) !=
+       as.character(predictintern))
+
+plot(Effect(focal.predictors = "beschryf",internmodel))
+plot(Effect(focal.predictors = "zinvol",internmodel))
+plot(Effect(focal.predictors = "bijhoud",internmodel))
+plot(Effect(focal.predictors = "uitgeven",internmodel))
+plot(Effect(focal.predictors = "loan2",internmodel))
+plot(Effect(focal.predictors = "hoevspa",internmodel))
+```
+
+
+
+
+```{r}
+table(PSY2018$nfc2)
+```
+
+```{r}
+plot(Effect(focal.predictors = "beschryf",testmodel))
+plot(Effect(focal.predictors = "zinvol",testmodel))
+plot(Effect(focal.predictors = "bijhoud",testmodel))
+plot(Effect(focal.predictors = "uitgeven",testmodel))
+plot(Effect(focal.predictors = "loan2",testmodel))
+plot(Effect(focal.predictors = "hoevspa",testmodel))
+```
+
+Informative plots about people's behaviour. Especially the plots for "bijhoud", "loan2" and "hoevspa" are interesting.
+
+
+
+
+
+
+
+
+
+

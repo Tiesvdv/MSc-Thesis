@@ -1,0 +1,84 @@
+---
+title: "Ridge/Lasso Thesis"
+author: "Ties van der Veen"
+date: "2-4-2020"
+output: pdf_document
+---
+
+```{r}
+req_packages <- c(
+  "tidyverse",
+  "glmnet"
+)
+
+if (!require("pacman")) install.packages("pacman")
+```
+
+```{r}
+pacman::p_load(req_packages, character.only = TRUE)
+```
+
+I will test the dataset with Lasso/Ridge regression to see what variables are useful when selecting payment methods. This is based on a tutorial in my Datascience course. I combined the seperate datasets from the DHS into one in another file, the total dataset is Fullset. The factorized version for regressions is nFullset.
+
+
+```{r}
+# Exploring the dataset in four ways.
+# Fullset %>% names()
+# Fullset %>% head()
+Fullset %>% glimpse()
+# Fullset %>% str()
+```
+
+```{r}
+Fullset %>% summarise_all(~sum(is.na(.))) %>% t()
+```
+
+```{r}
+Fullset %>% ggplot(aes(x = nfc2)) + geom_histogram(stat="count")
+```
+
+```{r}
+PSYtest <- PSY2018[,c("nfc1", "nfc2", "beschryf", "zinvol", "bijhoud", "uitgeven", "loan2", "loan3", "hoevspa")]
+```
+
+```{r}
+PSYtestridge <- model.matrix(~ ., data = PSYtest) %>% 
+  as.data.frame() %>% 
+  select(-`(Intercept)`) -> PSYtest
+```
+
+```{r}
+str(PSYtestridge)
+```
+
+```{r}
+grid <- 10^seq(10, -2, length = 100)
+plot(x = c(1:100), y = grid)
+```
+
+```{r}
+X <- PSYtestridge %>% select(-nfc1) 
+X <- model.matrix(~ .^3 - 1, X ) 
+y <- PSYtestridge$nfc1
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

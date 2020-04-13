@@ -1,0 +1,99 @@
+---
+title: "Causal Tree Test"
+author: "Ties van der Veen"
+date: "5-4-2020"
+output: pdf_document
+---
+
+```{r}
+req_packages <- c("learnr", "fairness", "DiagrammeR", "grf", "tidyverse")
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(req_packages, character.only = TRUE)
+```
+
+```{r}
+help(tune_causal_forest)
+```
+
+
+```{r}
+tune_causal_forest <- tune_causal_forest(
+  X = X,
+  Y = Y,
+  W = W,
+  Y.hat = 1,
+  W.hat = 1,
+  sample.weights = NULL,
+  clusters = NULL,
+  equalize.cluster.weights = FALSE,
+  sample.fraction = 0.5,
+  mtry = min(ceiling(sqrt(ncol(X)) + 20), ncol(X)),
+  min.node.size = 5,
+  honesty = TRUE,
+  honesty.fraction = 0.5,
+  honesty.prune.leaves = TRUE,
+  alpha = 0.05,
+  imbalance.penalty = 0,
+  stabilize.splits = TRUE,
+  ci.group.size = 2,
+  tune.parameters = "all",
+  tune.num.trees = 200,
+  tune.num.reps = 50,
+  tune.num.draws = 1000,
+  num.threads = NULL,
+)
+```
+
+
+```{r}
+PSYtest <- PSY2018[,c("nfc1", "nfc2", "beschryf", "zinvol", "bijhoud", "uitgeven", "loan2", "loan3", "hoevspa")]
+PSYtest <- PSYtest %>% mutate_if(is.factor, as.numeric)
+PSYtest <- PSYtest[complete.cases(PSYtest), ]
+```
+
+
+```{r}
+Y <- PSYtest$nfc2
+W <- PSYtest$nfc1
+
+X <- PSYtest %>%  select(-nfc2, -nfc1) %>%  
+  model.matrix( ~ ., data = .)
+
+# Drop the intercept (No need to change anything here)
+X <- X[ , -1]
+```
+
+```{r}
+set.seed(2345)
+cforest <- causal_forest(
+  X = X,
+  Y = Y,
+  W = W,
+  num.trees = 5,
+  clusters = NULL,
+  sample.fraction = 0.5,
+  mtry = ncol(X),
+  min.node.size = 1,
+  honesty = TRUE,
+  honesty.fraction = 0.5,
+  honesty.prune.leaves = TRUE,
+  tune.parameters = "min.node.size"
+)
+```
+
+```{r}
+plot(get_tree(cforest, index=3))
+```
+
+```{r}
+variable_importance(cforest)
+average_treatment_effect(cforest, target.sample = "control")
+```
+
+
+
+
+
+
+
+
